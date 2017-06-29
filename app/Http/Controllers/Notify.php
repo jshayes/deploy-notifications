@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Slack\Message;
+use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client as GuzzleClient;
 
 class Notify
@@ -15,6 +16,7 @@ class Notify
         try {
             $message = (new Message($message))->toArray();
         } catch (Exception $e) {
+            Log::debug($e);
         }
 
         $client->post(env('SLACK_WEBHOOK'), [
