@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use Throwable;
 use App\Slack\Message;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client as GuzzleClient;
@@ -16,6 +17,8 @@ class Notify
         try {
             $message = (new Message($message))->toArray();
         } catch (Exception $e) {
+            Log::debug($e);
+        } catch (Throwable $e) {
             Log::debug($e);
         }
 
