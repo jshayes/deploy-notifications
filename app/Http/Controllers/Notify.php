@@ -17,8 +17,10 @@ class Notify
         try {
             $message = (new Message($message))->toArray();
         } catch (Exception $e) {
+            Log::debug($message);
             Log::debug($e);
         } catch (Throwable $e) {
+            Log::debug($message);
             Log::debug($e);
         }
 
