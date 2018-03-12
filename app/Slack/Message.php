@@ -16,14 +16,15 @@ class Message implements Arrayable
         $this->data = $data;
 
         $rules = [
-            'color' => 'required',
-            'fields' => 'required|array',
-            'fields.*' => 'array',
+            'attachments' => 'required|array',
+            'attachments.*.color' => 'required',
+            'attachments.*.fields' => 'required|array',
+            'attachments.*.fields.*' => 'array',
         ];
 
         Validator::make($data, $rules)->validate();
 
-        $this->fields = (new Collection($data['fields']))
+        $this->fields = (new Collection($data['attachments'][0]['fields']))
             ->map(function ($field) {
                 return new Field($field);
             });
@@ -66,15 +67,7 @@ class Message implements Arrayable
     public function toArray(): array
     {
         $data = $this->data;
-
-        $data['attachments'] = [[
-            'color' => $data['color'],
-            'fields' => $this->fields->toArray(),
-        ]];
-
-        unset($data['color']);
-        unset($data['fields']);
-
+        $data['attachments'][0]['fields'] = $this->fields->toArray();
         return $data;
     }
 }

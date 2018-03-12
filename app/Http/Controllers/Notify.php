@@ -7,6 +7,7 @@ use Throwable;
 use App\Slack\Message;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client as GuzzleClient;
+use Illuminate\Validation\ValidationException;
 
 class Notify
 {
@@ -16,6 +17,8 @@ class Notify
 
         try {
             $message = (new Message($message))->toArray();
+        } catch (ValidationException $e) {
+            Log::debug($e->validator->errors());
         } catch (Exception $e) {
             Log::debug($message);
             Log::debug($e);
