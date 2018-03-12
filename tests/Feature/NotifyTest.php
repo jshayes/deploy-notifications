@@ -9,6 +9,77 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class NotifyTest extends TestCase
 {
+    private $requestData = [
+        'icon_emoji' => ':rocket:',
+        'attachments' => [
+            [
+                'color' => '#7CD197',
+                'fields' => [
+                    [
+                        'title' => 'Project',
+                        'value' => '<https://envoyer.io/projects/123456|Project>',
+                        'short' => true
+                    ],
+                    [
+                        'title' => 'Commit',
+                        'value' => '<https://github.com/user/repo/commit/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>',
+                        'short' => true
+                    ],
+                    [
+                        'title' => 'Committer',
+                        'value' => 'Jaspaul Bola',
+                        'short' => true
+                    ],
+                    [
+                        'title' => 'Branch',
+                        'value' => 'master',
+                        'short' => true
+                    ],
+                ],
+            ]
+        ],
+        'text' => 'Project deployed successfully! (https://envoyer.io/projects/123456/deployments/1)',
+        'username' => 'Envoyer'
+    ];
+
+    private $transformedData = [
+        'icon_emoji' => ':rocket:',
+        'attachments' => [
+            [
+                'color' => '#7CD197',
+                'fields' => [
+                    [
+                        'title' => 'Project',
+                        'value' => '<https://envoyer.io/projects/123456|Project>',
+                        'short' => true
+                    ],
+                    [
+                        'title' => 'Commit',
+                        'value' => '<https://github.com/user/repo/commit/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>',
+                        'short' => true
+                    ],
+                    [
+                        'title' => 'Committer',
+                        'value' => 'Jaspaul Bola',
+                        'short' => true
+                    ],
+                    [
+                        'title' => 'Branch',
+                        'value' => 'master',
+                        'short' => true
+                    ],
+                    [
+                        'title' => 'Message',
+                        'value' => 'Message test.',
+                        'short' => false
+                    ],
+                ],
+            ],
+        ],
+        'text' => 'Project deployed successfully! (https://envoyer.io/projects/123456/deployments/1)',
+        'username' => 'Envoyer',
+    ];
+
     private function assertMessageIsSent($input, $expected)
     {
         $guzzleClient = Mockery::mock(GuzzleClient::class);
@@ -39,25 +110,39 @@ class NotifyTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testSuccessfulMessage()
+    private function encode(array $input): string
     {
-        $input = '{"color":"#7CD197","icon_emoji":":rocket:","fields":[{"title":"Project","value":"<https:\/\/envoyer.io\/projects\/22967|GoodTalk-Notifications>","short":true},{"title":"Commit","value":"<https:\/\/github.com\/SoapBox\/GoodTalk-Notifications\/commit\/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>","short":true},{"title":"Committer","value":"Jaspaul Bola","short":true},{"title":"Branch","value":"master","short":true}],"text":"Project deployed successfully! (https:\/\/envoyer.io\/projects\/22967\/deployments\/1752658)","username":"Envoyer"}';
-        $expected = '{"icon_emoji":":rocket:","attachments":[{"color":"#7CD197","fields":[{"title":"Project","value":"<https:\/\/envoyer.io\/projects\/22967|GoodTalk-Notifications>","short":true},{"title":"Commit","value":"<https:\/\/github.com\/SoapBox\/GoodTalk-Notifications\/commit\/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>","short":true},{"title":"Committer","value":"Jaspaul Bola","short":true},{"title":"Branch","value":"master","short":true},{"title":"Message","value":"Message test.","short":false}]}],"text":"Project deployed successfully! (https:\/\/envoyer.io\/projects\/22967\/deployments\/1752658)","username":"Envoyer"}';
-
-        $this->assertMessageIsSent($input, $expected);
+        return json_encode($input);
     }
 
-    public function testFailureMessage()
+    private function getRequestData(): string
     {
-        $input = '{"color":"#F35A00","icon_emoji":":rocket:","fields":[{"title":"Project","value":"<https:\/\/envoyer.io\/projects\/22967|GoodTalk-Notifications>","short":true},{"title":"Commit","value":"<https:\/\/github.com\/SoapBox\/GoodTalk-Notifications\/commit\/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>","short":true},{"title":"Committer","value":"Jaspaul Bola","short":true},{"title":"Branch","value":"master","short":true}],"text":"Project failed to deploy! (https:\/\/envoyer.io\/projects\/22967\/deployments\/1752767)","username":"Envoyer"}';
-        $expected = '{"icon_emoji":":rocket:","attachments":[{"color":"#F35A00","fields":[{"title":"Project","value":"<https:\/\/envoyer.io\/projects\/22967|GoodTalk-Notifications>","short":true},{"title":"Commit","value":"<https:\/\/github.com\/SoapBox\/GoodTalk-Notifications\/commit\/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>","short":true},{"title":"Committer","value":"Jaspaul Bola","short":true},{"title":"Branch","value":"master","short":true},{"title":"Message","value":"Message test.","short":false}]}],"text":"Project failed to deploy! (https:\/\/envoyer.io\/projects\/22967\/deployments\/1752767)","username":"Envoyer"}';
+        return json_encode($this->requestData);
+    }
+
+    private function getRequestDataWithout(string ...$keys): string
+    {
+        $data = $this->requestData;
+        array_forget($data, $keys);
+        return json_encode($data);
+    }
+
+    private function getTransformedData(): string
+    {
+        return json_encode($this->transformedData);
+    }
+
+    public function testSuccessfulMessage()
+    {
+        $input = $this->getRequestData();
+        $expected = $this->getTransformedData();
 
         $this->assertMessageIsSent($input, $expected);
     }
 
     public function testMissingColour()
     {
-        $input = '{"icon_emoji":":rocket:","fields":[{"title":"Project","value":"<https:\/\/envoyer.io\/projects\/22967|GoodTalk-Notifications>","short":true},{"title":"Commit","value":"<https:\/\/github.com\/SoapBox\/GoodTalk-Notifications\/commit\/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>","short":true},{"title":"Committer","value":"Jaspaul Bola","short":true},{"title":"Branch","value":"master","short":true}],"text":"Project deployed successfully! (https:\/\/envoyer.io\/projects\/22967\/deployments\/1752658)","username":"Envoyer"}';
+        $input = $this->getRequestDataWithout('attachments.0.color');
         $expected = $input;
 
         $this->assertMessageIsSent($input, $expected);
@@ -65,7 +150,7 @@ class NotifyTest extends TestCase
 
     public function testMissingFields()
     {
-        $input = '{"color":"#7CD197","icon_emoji":":rocket:","text":"Project deployed successfully! (https:\/\/envoyer.io\/projects\/22967\/deployments\/1752658)","username":"Envoyer"}';
+        $input = $this->getRequestDataWithout('attachments.0.fields');
         $expected = $input;
 
         $this->assertMessageIsSent($input, $expected);
@@ -73,7 +158,7 @@ class NotifyTest extends TestCase
 
     public function testMissingFieldTitle()
     {
-        $input = '{"color":"#7CD197","icon_emoji":":rocket:","fields":[{"value":"<https:\/\/envoyer.io\/projects\/22967|GoodTalk-Notifications>","short":true},{"title":"Commit","value":"<https:\/\/github.com\/SoapBox\/GoodTalk-Notifications\/commit\/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>","short":true},{"title":"Committer","value":"Jaspaul Bola","short":true},{"title":"Branch","value":"master","short":true}],"text":"Project deployed successfully! (https:\/\/envoyer.io\/projects\/22967\/deployments\/1752658)","username":"Envoyer"}';
+        $input = $this->getRequestDataWithout('attachments.0.fields.0.title');
         $expected = $input;
 
         $this->assertMessageIsSent($input, $expected);
@@ -81,7 +166,7 @@ class NotifyTest extends TestCase
 
     public function testMissingFieldValue()
     {
-        $input = '{"color":"#7CD197","icon_emoji":":rocket:","fields":[{"title":"Project","short":true},{"title":"Commit","value":"<https:\/\/github.com\/SoapBox\/GoodTalk-Notifications\/commit\/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>","short":true},{"title":"Committer","value":"Jaspaul Bola","short":true},{"title":"Branch","value":"master","short":true}],"text":"Project deployed successfully! (https:\/\/envoyer.io\/projects\/22967\/deployments\/1752658)","username":"Envoyer"}';
+        $input = $this->getRequestDataWithout('attachments.0.fields.0.value');
         $expected = $input;
 
         $this->assertMessageIsSent($input, $expected);
