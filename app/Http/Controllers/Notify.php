@@ -18,6 +18,7 @@ class Notify
         try {
             $message = (new Message($message))->toArray();
         } catch (ValidationException $e) {
+            Log::debug($message);
             Log::debug($e->validator->errors());
         } catch (Exception $e) {
             Log::debug($message);
