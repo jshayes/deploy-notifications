@@ -11,69 +11,61 @@ class NotifyTest extends TestCase
 {
     private $requestData = [
         'icon_emoji' => ':rocket:',
-        'attachments' => [
+        'color' => '#7CD197',
+        'fields' => [
             [
-                'color' => '#7CD197',
-                'fields' => [
-                    [
-                        'title' => 'Project',
-                        'value' => '<https://envoyer.io/projects/123456|Project>',
-                        'short' => true
-                    ],
-                    [
-                        'title' => 'Commit',
-                        'value' => '<https://github.com/user/repo/commit/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>',
-                        'short' => true
-                    ],
-                    [
-                        'title' => 'Committer',
-                        'value' => 'Jaspaul Bola',
-                        'short' => true
-                    ],
-                    [
-                        'title' => 'Branch',
-                        'value' => 'master',
-                        'short' => true
-                    ],
-                ],
-            ]
+                'title' => 'Project',
+                'value' => '<https://envoyer.io/projects/123456|Project>',
+                'short' => true,
+            ],
+            [
+                'title' => 'Commit',
+                'value' => '<https://github.com/user/repo/commit/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>',
+                'short' => true,
+            ],
+            [
+                'title' => 'Committer',
+                'value' => 'Jaspaul Bola',
+                'short' => true,
+            ],
+            [
+                'title' => 'Branch',
+                'value' => 'master',
+                'short' => true,
+            ],
         ],
         'text' => 'Project deployed successfully! (https://envoyer.io/projects/123456/deployments/1)',
-        'username' => 'Envoyer'
+        'username' => 'Envoyer',
     ];
 
     private $transformedData = [
         'icon_emoji' => ':rocket:',
-        'attachments' => [
+        'color' => '#7CD197',
+        'fields' => [
             [
-                'color' => '#7CD197',
-                'fields' => [
-                    [
-                        'title' => 'Project',
-                        'value' => '<https://envoyer.io/projects/123456|Project>',
-                        'short' => true
-                    ],
-                    [
-                        'title' => 'Commit',
-                        'value' => '<https://github.com/user/repo/commit/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>',
-                        'short' => true
-                    ],
-                    [
-                        'title' => 'Committer',
-                        'value' => 'Jaspaul Bola',
-                        'short' => true
-                    ],
-                    [
-                        'title' => 'Branch',
-                        'value' => 'master',
-                        'short' => true
-                    ],
-                    [
-                        'title' => 'Message',
-                        'value' => 'Message test.',
-                        'short' => false
-                    ],
-                ],
+                'title' => 'Project',
+                'value' => '<https://envoyer.io/projects/123456|Project>',
+                'short' => true,
+            ],
+            [
+                'title' => 'Commit',
+                'value' => '<https://github.com/user/repo/commit/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>',
+                'short' => true,
+            ],
+            [
+                'title' => 'Committer',
+                'value' => 'Jaspaul Bola',
+                'short' => true,
+            ],
+            [
+                'title' => 'Branch',
+                'value' => 'master',
+                'short' => true,
+            ],
+            [
+                'title' => 'Message',
+                'value' => 'Message test.',
+                'short' => false,
             ],
         ],
         'text' => 'Project deployed successfully! (https://envoyer.io/projects/123456/deployments/1)',
@@ -95,12 +87,11 @@ class NotifyTest extends TestCase
         $guzzleClient->shouldReceive('post')
             ->with(Mockery::type('string'), Mockery::on(function ($data) use ($expected) {
                 $this->assertEquals([
-                    'json' => json_decode($expected, true)
+                    'json' => json_decode($expected, true),
                 ], $data);
 
                 return true;
             }));
-
 
         $this->app->instance(GuzzleClient::class, $guzzleClient);
         $this->app->instance(GithubClient::class, $githubClient);
@@ -142,7 +133,7 @@ class NotifyTest extends TestCase
 
     public function testMissingColour()
     {
-        $input = $this->getRequestDataWithout('attachments.0.color');
+        $input = $this->getRequestDataWithout('color');
         $expected = $input;
 
         $this->assertMessageIsSent($input, $expected);
@@ -150,7 +141,7 @@ class NotifyTest extends TestCase
 
     public function testMissingFields()
     {
-        $input = $this->getRequestDataWithout('attachments.0.fields');
+        $input = $this->getRequestDataWithout('fields');
         $expected = $input;
 
         $this->assertMessageIsSent($input, $expected);
@@ -158,7 +149,7 @@ class NotifyTest extends TestCase
 
     public function testMissingFieldTitle()
     {
-        $input = $this->getRequestDataWithout('attachments.0.fields.0.title');
+        $input = $this->getRequestDataWithout('fields.0.title');
         $expected = $input;
 
         $this->assertMessageIsSent($input, $expected);
@@ -166,7 +157,7 @@ class NotifyTest extends TestCase
 
     public function testMissingFieldValue()
     {
-        $input = $this->getRequestDataWithout('attachments.0.fields.0.value');
+        $input = $this->getRequestDataWithout('fields.0.value');
         $expected = $input;
 
         $this->assertMessageIsSent($input, $expected);
