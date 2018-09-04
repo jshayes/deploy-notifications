@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use Throwable;
-use App\Slack\Message;
+use App\Slack\Factory;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Validation\ValidationException;
@@ -16,7 +16,7 @@ class Notify
         $message = request()->all();
 
         try {
-            $message = (new Message($message))->toArray();
+            $message = Factory::makeMessage($message)->toArray();
         } catch (ValidationException $e) {
             Log::debug($message);
             Log::debug($e->validator->errors());
@@ -29,7 +29,7 @@ class Notify
         }
 
         $client->post(env('SLACK_WEBHOOK'), [
-            'json' => $message
+            'json' => $message,
         ]);
     }
 }
