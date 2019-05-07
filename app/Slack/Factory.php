@@ -3,6 +3,7 @@
 namespace App\Slack;
 
 use Exception;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 
@@ -10,6 +11,10 @@ class Factory
 {
     public static function makeMessage(array $data)
     {
+        if (Arr::has($data, 'attachments.0')) {
+            $data = Arr::get($data, 'attachments.0');
+        }
+
         $rules = [
             'color' => 'required',
             'fields' => 'required|array',

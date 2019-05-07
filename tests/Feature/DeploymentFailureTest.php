@@ -10,32 +10,36 @@ use GuzzleHttp\Client as GuzzleClient;
 class DeploymentFailureTest extends TestCase
 {
     private $requestData = [
-        'icon_emoji' => ':rocket:',
-        'color' => '#F35A00',
-        'fields' => [
+        'attachments' => [
             [
-                'title' => 'Project',
-                'value' => '<https://envoyer.io/projects/123456|Project>',
-                'short' => true,
-            ],
-            [
-                'title' => 'Commit',
-                'value' => '<https://github.com/user/repo/commit/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>',
-                'short' => true,
-            ],
-            [
-                'title' => 'Committer',
-                'value' => 'Jaspaul Bola',
-                'short' => true,
-            ],
-            [
-                'title' => 'Branch',
-                'value' => 'master',
-                'short' => true,
+                'icon_emoji' => ':rocket:',
+                'color' => '#F35A00',
+                'fields' => [
+                    [
+                        'title' => 'Project',
+                        'value' => '<https://envoyer.io/projects/123456|Project>',
+                        'short' => true,
+                    ],
+                    [
+                        'title' => 'Commit',
+                        'value' => '<https://github.com/user/repo/commit/ec7cee5c65f23fb9ac6027ef9fa385001484d9b9|ec7cee5>',
+                        'short' => true,
+                    ],
+                    [
+                        'title' => 'Committer',
+                        'value' => 'Jaspaul Bola',
+                        'short' => true,
+                    ],
+                    [
+                        'title' => 'Branch',
+                        'value' => 'master',
+                        'short' => true,
+                    ],
+                ],
+                'text' => 'Project failed to deploy! (https://envoyer.io/projects/123456/deployments/1)',
+                'username' => 'Envoyer',
             ],
         ],
-        'text' => 'Project failed to deploy! (https://envoyer.io/projects/123456/deployments/1)',
-        'username' => 'Envoyer',
     ];
 
     private $transformedData = [
